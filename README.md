@@ -5,7 +5,7 @@ Class Planner
 
 Class Planner is a web-based application designed to help students efficiently manage and organize their class schedules, assignments, and tasks. With a clean and simple user interface, this application makes scheduling and tracking academic responsibilities easier and more intuitive.
 
-Read more about the benefits of using Class Planner in this article.
+Read more about the benefits of using Class Planner in this article: https://discoverytech.org/simplify-your-academic-journey-with-class-schedule-planner/
 
 Features
 
