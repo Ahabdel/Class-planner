@@ -1,0 +1,234 @@
+html {
+  height: 100%;
+  width: 100%;
+}
+
+/* style.css */
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* Layout */
+.container {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Authentication Section */
+#auth-section {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+#login-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#user-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Class Input and Schedule Sections */
+.class-input,
+.schedule {
+    width: 50%;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings */
+h2, h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Class List and Items */
+.class-list, .semester {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+    min-height: 100px;
+    background-color: #fafafa;
+}
+
+.class-item, .scheduled-class {
+    background: #f0f0f0;
+    padding: 8px 12px;
+    margin: 5px;
+    border-radius: 4px;
+    cursor: move;
+    user-select: none;
+    transition: all 0.2s;
+}
+
+.class-item.dragging, .scheduled-class.dragging {
+    opacity: 0.5;
+    transform: scale(1.05);
+}
+
+/* Semester Styling */
+.semester {
+    background: #e8e8e8;
+    margin-bottom: 15px;
+}
+
+.semester-header {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.semester-term, .semester-year {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.semester-title {
+    font-weight: bold;
+    color: #666;
+    font-size: 1em;
+    padding: 5px;
+}
+
+.semester-year {
+    width: 80px;
+}
+
+.semester-title:focus {
+    background: #fff;
+    outline: 1px solid #ddd;
+}
+
+.semester-content {
+    min-height: 50px;
+}
+
+/* Connection Form */
+.connection-form {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.connection-form select {
+    padding: 8px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Connections Display */
+.connection {
+    color: #666;
+    font-size: 0.9em;
+    margin: 5px 0;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+/* Input Groups */
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group input {
+    margin-right: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .class-input,
+    .schedule {
+        width: 100%;
+    }
+
+    #login-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #login-form input,
+    #login-form button {
+        margin: 5px 0;
+        width: 100%;
+    }
+}
+
+/* Utility Classes */
+.hidden {
+    display: none;
+}
+
+.error {
+    color: #dc3545;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* Hover Effects */
+.class-item:hover, .scheduled-class:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}

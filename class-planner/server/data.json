@@ -1,0 +1,259 @@
+{
+  "users": [
+    {
+      "username": "Ahmad",
+      "password": "$2a$10$vbwPvfEX01AruZ6IqYzCe.JLBHvMvHsO7Fk9Ngm1Btpm8XJsXO.wG"
+    }
+  ],
+  "schedules": [
+    {
+      "classes": [
+        {
+          "name": "CSc 60",
+          "units": 3
+        },
+        {
+          "name": "ENGR 1",
+          "units": 1
+        },
+        {
+          "name": "ENGR 17",
+          "units": 3
+        },
+        {
+          "name": "CSc 130",
+          "units": 3
+        },
+        {
+          "name": "CpE 138",
+          "units": 3
+        },
+        {
+          "name": "Math 45",
+          "units": 3
+        },
+        {
+          "name": "PHYS 11C",
+          "units": 4
+        },
+        {
+          "name": "CpE 142",
+          "units": 3
+        },
+        {
+          "name": "CpE 151",
+          "units": 3
+        },
+        {
+          "name": "CpE 159",
+          "units": 3
+        },
+        {
+          "name": "CpE 166",
+          "units": 4
+        },
+        {
+          "name": "CpE 185",
+          "units": 4
+        },
+        {
+          "name": "CpE 186",
+          "units": 3
+        },
+        {
+          "name": "CpE 190",
+          "units": 2
+        },
+        {
+          "name": "CpE 191",
+          "units": 2
+        },
+        {
+          "name": "CSc 139",
+          "units": 3
+        },
+        {
+          "name": "EEE 108",
+          "units": 3
+        },
+        {
+          "name": "EEE 108L",
+          "units": 1
+        },
+        {
+          "name": "EEE 117",
+          "units": 3
+        },
+        {
+          "name": "EEE 117L",
+          "units": 1
+        },
+        {
+          "name": "EEE 180",
+          "units": 3
+        },
+        {
+          "name": "ENGR 120",
+          "units": 3
+        },
+        {
+          "name": "ENGR 140",
+          "units": 2
+        },
+        {
+          "name": "ENVS 10",
+          "units": 3
+        }
+      ],
+      "connections": [
+        {
+          "class1": "PHYS 11C",
+          "class2": "ENGR 17",
+          "type": "prereq"
+        },
+        {
+          "class1": "CSc 60",
+          "class2": "CpE 138",
+          "type": "prereq"
+        },
+        {
+          "class1": "CSc 130",
+          "class2": "CpE 138",
+          "type": "prereq"
+        },
+        {
+          "class1": "CSc 60",
+          "class2": "CSc 139",
+          "type": "prereq"
+        },
+        {
+          "class1": "CSc 130",
+          "class2": "CSc 139",
+          "type": "prereq"
+        },
+        {
+          "class1": "CSc 60",
+          "class2": "CpE 185",
+          "type": "prereq"
+        },
+        {
+          "class1": "CpE 185",
+          "class2": "CpE 142",
+          "type": "prereq"
+        },
+        {
+          "class1": "CpE 166",
+          "class2": "CpE 142",
+          "type": "prereq"
+        },
+        {
+          "class1": "ENGR 17",
+          "class2": "CpE 166",
+          "type": "prereq"
+        },
+        {
+          "class1": "EEE 117",
+          "class2": "EEE 108",
+          "type": "prereq"
+        },
+        {
+          "class1": "ENGR 17",
+          "class2": "EEE 117",
+          "type": "prereq"
+        },
+        {
+          "class1": "ENGR 17",
+          "class2": "EEE 117L",
+          "type": "prereq"
+        },
+        {
+          "class1": "EEE 117",
+          "class2": "EEE 108L",
+          "type": "prereq"
+        },
+        {
+          "class1": "ENGR 17",
+          "class2": "EEE 180",
+          "type": "prereq"
+        },
+        {
+          "class1": "EEE 108",
+          "class2": "CpE 151",
+          "type": "prereq"
+        },
+        {
+          "class1": "ENGR 17",
+          "class2": "ENGR 140",
+          "type": "prereq"
+        },
+        {
+          "class1": "ENGR 17",
+          "class2": "EEE 180",
+          "type": "prereq"
+        },
+        {
+          "class1": "CSc 139",
+          "class2": "CpE 159",
+          "type": "prereq"
+        },
+        {
+          "class1": "ENGR 17",
+          "class2": "ENGR 120",
+          "type": "prereq"
+        },
+        {
+          "class1": "CpE 190",
+          "class2": "CpE 191",
+          "type": "prereq"
+        },
+        {
+          "class1": "CpE 166",
+          "class2": "CpE 190",
+          "type": "prereq"
+        },
+        {
+          "class1": "EEE 108",
+          "class2": "CpE 190",
+          "type": "prereq"
+        },
+        {
+          "class1": "PHYS 11C",
+          "class2": "Math 45",
+          "type": "prereq"
+        },
+        {
+          "class1": "CpE 185",
+          "class2": "CpE 186",
+          "type": "prereq"
+        }
+      ],
+      "semesterAssignments": {
+        "CSc 60 (3 units)": 1,
+        "ENGR 1 (1 units)": 1,
+        "CSc 130 (3 units)": 1,
+        "PHYS 11C (4 units)": 1,
+        "ENVS 10 (3 units)": 1,
+        "ENGR 17 (3 units)": 2,
+        "CpE 138 (3 units)": 2,
+        "Math 45 (3 units)": 2,
+        "CpE 185 (4 units)": 2,
+        "CSc 139 (3 units)": 2,
+        "CpE 159 (3 units)": 3,
+        "CpE 166 (4 units)": 3,
+        "CpE 186 (3 units)": 3,
+        "EEE 117 (3 units)": 3,
+        "EEE 117L (1 units)": 3,
+        "EEE 180 (3 units)": 3,
+        "ENGR 120 (3 units)": 3,
+        "ENGR 140 (2 units)": 3,
+        "CpE 142 (3 units)": 4,
+        "EEE 108 (3 units)": 4,
+        "EEE 108L (1 units)": 4,
+        "CpE 151 (3 units)": 5,
+        "CpE 190 (2 units)": 5,
+        "CpE 191 (2 units)": 6
+      },
+      "username": "Ahmad"
+    }
+  ]
+}

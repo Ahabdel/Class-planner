@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Schedule Planner</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
+        .container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space-between; }
+        .class-input, .schedule { width: 48%; max-width: 600px; }
+        .class-list, .semester { border: 1px solid #ccc; padding: 12px; margin: 10px 0; min-height: 120px; background: #fff; border-radius: 6px; box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); }
+        .class-item, .scheduled-class { background: #f0f0f0; padding: 10px; margin: 5px; cursor: grab; user-select: none; border-radius: 4px; transition: background 0.2s ease-in-out; }
+        .class-item:hover, .scheduled-class:hover { background: #e0e0e0; }
+        .class-item.dragging, .scheduled-class.dragging { opacity: 0.6; background: #d6d6d6; }
+        .semester { background: #e8e8e8; padding-bottom: 20px; position: relative; }
+        .semester-header { font-weight: bold; text-align: center; padding: 5px; background: #dcdcdc; border-bottom: 2px solid #bbb; border-radius: 4px 4px 0 0; }
+        .connection-form { margin: 15px 0; padding: 10px; background: #f3f3f3; border-radius: 5px; }
+        .connection { color: #444; font-size: 0.9em; margin-left: 10px; background: #ddd; padding: 5px; border-radius: 3px; }
+        .drop-target { min-height: 120px; }
+        .remove-semester { position: absolute; top: 5px; right: 10px; background: red; color: white; border: none; cursor: pointer; padding: 2px 5px; font-size: 0.8em; border-radius: 3px; }
+        .remove-semester:hover { background: darkred; }
+        .semester-container { margin-bottom: 10px; }
+        @media (max-width: 800px) { .container { flex-direction: column; } .class-input, .schedule { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div id="auth-section">
+        <div id="login-form">
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <button onclick="register()">Register</button>
+        </div>
+        <div id="user-section" style="display: none;">
+            <span id="current-user"></span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="class-input">
+            <h2>Class List</h2>
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <input type="checkbox" id="showPlacedClasses" checked onchange="updateClassList()">
+                <label for="showPlacedClasses">Show placed classes</label>
+            </div>
+            <div>
+                <input type="text" id="classInput" placeholder="Enter class name">
+                <input type="number" id="unitsInput" placeholder="Units" min="1" max="6" style="width: 80px;">
+                <button onclick="addClass()">Add Class</button>
+            </div>
+            <div class="class-list drop-target" id="classList"></div>
+            <div class="connection-form">
+                <h3>Connect Classes</h3>
+                <select id="class1"></select>
+                <select id="connectionType">
+                    <option value="prereq">Prerequisite</option>
+                    <option value="corequisite">Corequisite</option>
+                </select>
+                <select id="class2"></select>
+                <button onclick="addConnection()">Add Connection</button>
+            </div>
+            <div id="connections"></div>
+        </div>
+        <div class="schedule">
+            <h2>Schedule</h2>
+            <div class="semester-container">
+                <div class="semester" data-semester="1">
+                    <div class="semester-header">Semester 1<button class="remove-semester" onclick="removeSemester(1)">X</button></div>
+                    <div class="semester-content drop-target"></div>
+                </div>
+                <div class="semester" data-semester="2">
+                    <div class="semester-header">Semester 2<button class="remove-semester" onclick="removeSemester(2)">X</button></div>
+                    <div class="semester-content drop-target"></div>
+                </div>
+                <div class="semester" data-semester="3">
+                    <div class="semester-header">Semester 3<button class="remove-semester" onclick="removeSemester(3)">X</button></div>
+                    <div class="semester-content drop-target"></div>
+                </div>
+                <div class="semester" data-semester="4">
+                    <div class="semester-header">Semester 4<button class="remove-semester" onclick="removeSemester(4)">X</button></div>
+                    <div class="semester-content drop-target"></div>
+                </div>
+                <div class="semester" data-semester="5">
+                    <div class="semester-header">Semester 5<button class="remove-semester" onclick="removeSemester(5)">X</button></div>
+                    <div class="semester-content drop-target"></div>
+                </div>
+                <div class="semester" data-semester="6">
+                    <div class="semester-header">Semester 6<button class="remove-semester" onclick="removeSemester(6)">X</button></div>
+                    <div class="semester-content drop-target"></div>
+                </div>
+                <div class="semester" data-semester="7">
+                    <div class="semester-header">Semester 7<button class="remove-semester" onclick="removeSemester(7)">X</button></div>
+                    <div class="semester-content drop-target"></div>
+                </div>
+                <div class="semester" data-semester="8">
+                    <div class="semester-header">Semester 8<button class="remove-semester" onclick="removeSemester(8)">X</button></div>
+                    <div class="semester-content drop-target"></div>
+                </div>
+            </div>
+            <button onclick="addSemester()">Add Semester</button>
+            <button onclick="saveSchedule()">Save Schedule</button>
+            <button onclick="resetSchedule()" style="background-color: #dc3545;">Reset Schedule</button>
+        </div>
+    </div>
+    <script>
+        let classes = [];
+        let connections = [];
+        let token = null;
+        let semesterCount = 8;
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Login failed');
+                token = data.token;
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('user-section').style.display = 'block';
+                document.getElementById('current-user').textContent = `Logged in as: ${username}`;
+                document.getElementById('password').value = '';
+                await loadSchedule();
+            } catch (error) {
+                document.getElementById('password').value = '';
+                alert(error.message);
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                alert(data.message || (response.ok ? 'Registration successful' : 'Registration failed'));
+            } catch (error) {
+                alert('Registration failed: ' + error.message);
+            }
+        }
+
+        function logout() {
+            token = null;
+            document.getElementById('auth-section').style.display = 'block';
+            document.getElementById('user-section').style.display = 'none';
+        }
+
+        async function loadSchedule() {
+            try {
+                const response = await fetch('/api/schedule', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to load schedule');
+                const data = await response.json();
+                classes = data.classes || [];
+                connections = data.connections || [];
+                const assignments = data.semesterAssignments || {};
+                semesterCount = Math.max(8, Math.max(...Object.values(assignments).filter(num => num > 0))) || 8;
+                updateSemesterBoxes();
+                classes.forEach(cls => {
+                    const semesterNum = assignments[`${cls.name} (${cls.units} units)`] || 0;
+                    const semesterDiv = document.querySelector(`.semester[data-semester="${semesterNum}"] .semester-content`);
+                    if (semesterDiv) {
+                        semesterDiv.innerHTML += `<div class="scheduled-class" draggable="true">${cls.name} (${cls.units} units)</div>`;
+                    }
+                });
+                updateClassList();
+                updateConnections();
+            } catch (error) {
+                console.error('Load error:', error);
+                classes = [];
+                connections = [];
+                updateSemesterBoxes();
+                updateClassList();
+                updateConnections();
+            }
+        }
+
+        async function saveSchedule() {
+            if (!token) return alert('Please log in first');
+            const semesterAssignments = {};
+            document.querySelectorAll('.semester').forEach(semester => {
+                const semesterNum = parseInt(semester.dataset.semester);
+                semester.querySelectorAll('.scheduled-class').forEach(cls => {
+                    semesterAssignments[cls.textContent] = semesterNum;
+                });
+            });
+            try {
+                const response = await fetch('/api/schedule', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ classes, connections, semesterAssignments })
+                });
+                if (!response.ok) throw new Error('Failed to save');
+                alert('Schedule saved successfully');
+            } catch (error) {
+                alert('Save failed: ' + error.message);
+            }
+        }
+
+        function addClass() {
+            const name = document.getElementById('classInput').value.trim();
+            const units = parseInt(document.getElementById('unitsInput').value);
+            if (name && units && !classes.some(c => c.name === name)) {
+                classes.push({ name, units });
+                updateClassList();
+                document.getElementById('classInput').value = '';
+                document.getElementById('unitsInput').value = '';
+            }
+        }
+
+        function updateClassList() {
+            const classList = document.getElementById('classList');
+            const showPlaced = document.getElementById('showPlacedClasses').checked;
+            const placedClasses = new Set(
+                Array.from(document.querySelectorAll('.semester-content .scheduled-class'))
+                    .map(cls => cls.textContent.split(' (')[0])
+            );
+            classList.innerHTML = classes
+                .filter(cls => showPlaced || !placedClasses.has(cls.name))
+                .map(cls => `<div class="class-item" draggable="true">${cls.name} (${cls.units} units)</div>`)
+                .join('');
+            updateSelectOptions();
+            setupDragAndDrop();
+        }
+
+        function addConnection() {
+            const class1 = document.getElementById('class1').value;
+            const class2 = document.getElementById('class2').value;
+            const type = document.getElementById('connectionType').value;
+            if (class1 && class2 && class1 !== class2) {
+                connections.push({ class1, class2, type });
+                updateConnections();
+                autoArrangeSchedule();
+            }
+        }
+
+        function updateConnections() {
+            document.getElementById('connections').innerHTML = connections
+                .map((conn, index) => `
+                    <div class="connection">
+                        ${conn.class1} → ${conn.class2} (${conn.type})
+                        <button onclick="deleteConnection(${index})">Delete</button>
+                    </div>
+                `).join('');
+            updateSelectOptions();
+        }
+
+        function deleteConnection(index) {
+            connections.splice(index, 1);
+            updateConnections();
+            autoArrangeSchedule();
+        }
+
+        function updateSelectOptions() {
+            const options = classes.map(cls => `<option value="${cls.name}">${cls.name} (${cls.units} units)</option>`).join('');
+            document.getElementById('class1').innerHTML = options;
+            document.getElementById('class2').innerHTML = options;
+        }
+
+        function addSemester() {
+            semesterCount++;
+            const semesterContainer = document.querySelector('.semester-container');
+            const newSemester = document.createElement('div');
+            newSemester.className = 'semester';
+            newSemester.dataset.semester = semesterCount;
+            newSemester.innerHTML = `
+                <div class="semester-header">Semester ${semesterCount}<button class="remove-semester" onclick="removeSemester(${semesterCount})">X</button></div>
+                <div class="semester-content drop-target"></div>
+            `;
+            semesterContainer.appendChild(newSemester);
+            setupDragAndDrop();
+        }
+
+        function removeSemester(semesterNum) {
+            const semester = document.querySelector(`.semester[data-semester="${semesterNum}"]`);
+            if (!semester) return;
+            const classesInSemester = semester.querySelectorAll('.scheduled-class');
+            if (classesInSemester.length > 0) {
+                if (!confirm(`Remove Semester ${semesterNum} and move ${classesInSemester.length} classes to the class list?`)) return;
+                const classList = document.getElementById('classList');
+                classesInSemester.forEach(cls => classList.appendChild(cls));
+            }
+            semester.remove();
+            setupDragAndDrop();
+            updateClassList();
+        }
+
+        function updateSemesterBoxes() {
+            const semesterContainer = document.querySelector('.semester-container');
+            const existingSemesters = document.querySelectorAll('.semester');
+            const maxExisting = Math.max(...Array.from(existingSemesters).map(s => parseInt(s.dataset.semester) || 0));
+            semesterCount = Math.max(semesterCount, maxExisting);
+            
+            existingSemesters.forEach(semester => semester.remove());
+
+            for (let i = 1; i <= semesterCount; i++) {
+                const newSemester = document.createElement('div');
+                newSemester.className = 'semester';
+                newSemester.dataset.semester = i;
+                newSemester.innerHTML = `
+                    <div class="semester-header">Semester ${i}<button class="remove-semester" onclick="removeSemester(${i})">X</button></div>
+                    <div class="semester-content drop-target"></div>
+                `;
+                semesterContainer.appendChild(newSemester);
+            }
+            setupDragAndDrop();
+        }
+
+        function setupDragAndDrop() {
+            const draggables = document.querySelectorAll('.class-item, .scheduled-class');
+            const container = document.querySelector('.container');
+
+            draggables.forEach(draggable => {
+                draggable.setAttribute('draggable', 'true');
+                draggable.addEventListener('dragstart', (e) => {
+                    e.target.classList.add('dragging');
+                    console.log('Dragging:', e.target.textContent);
+                });
+                draggable.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('dragging');
+                });
+            });
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const target = e.target.closest('.drop-target');
+                if (target) {
+                    e.dataTransfer.dropEffect = 'move';
+                    console.log('Dragover:', target.className, target.parentElement?.dataset.semester || 'class-list');
+                }
+            });
+
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const draggable = document.querySelector('.dragging');
+                const target = e.target.closest('.drop-target');
+                if (draggable && target) {
+                    console.log('Dropped:', draggable.textContent, 'into', target.className, target.parentElement?.dataset.semester || 'class-list');
+                    target.appendChild(draggable);
+                    updateClassList();
+                }
+            });
+        }
+
+        function autoArrangeSchedule() {
+            document.querySelectorAll('.semester-content').forEach(content => content.innerHTML = '');
+            const prereqMap = new Map(classes.map(cls => [cls.name, new Set()]));
+            connections.forEach(conn => {
+                if (conn.type === 'prereq') prereqMap.get(conn.class2).add(conn.class1);
+            });
+
+            const semesterAssignments = new Map();
+            function getEarliestSemester(cls) {
+                if (semesterAssignments.has(cls)) return semesterAssignments.get(cls);
+                const prereqs = prereqMap.get(cls);
+                let minSemester = 1;
+                prereqs.forEach(prereq => {
+                    minSemester = Math.max(minSemester, getEarliestSemester(prereq) + 1);
+                });
+                connections
+                    .filter(c => c.type === 'corequisite' && (c.class1 === cls || c.class2 === cls))
+                    .map(c => c.class1 === cls ? c.class2 : c.class1)
+                    .forEach(co => {
+                        minSemester = Math.max(minSemester, getEarliestSemester(co));
+                    });
+                semesterAssignments.set(cls, minSemester);
+                return minSemester;
+            }
+
+            classes.forEach(cls => {
+                const semester = getEarliestSemester(cls.name);
+                if (semester > semesterCount) {
+                    for (let i = semesterCount + 1; i <= semester; i++) addSemester();
+                }
+                const semesterDiv = document.querySelector(`.semester[data-semester="${semester}"] .semester-content`);
+                if (semesterDiv) {
+                    semesterDiv.innerHTML += `<div class="scheduled-class" draggable="true">${cls.name} (${cls.units} units)</div>`;
+                }
+            });
+            setupDragAndDrop();
+        }
+
+        function resetSchedule() {
+            if (!confirm('Are you sure you want to reset your schedule?')) return;
+            classes = [];
+            connections = [];
+            semesterCount = 8;
+            updateSemesterBoxes();
+            updateClassList();
+            updateConnections();
+            saveSchedule();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupDragAndDrop();
+            updateSelectOptions();
+        });
+    </script>
+</body>
+</html>
